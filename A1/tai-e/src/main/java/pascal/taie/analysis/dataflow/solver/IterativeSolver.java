@@ -39,6 +39,31 @@ class IterativeSolver<Node, Fact> extends Solver<Node, Fact> {
 
     @Override
     protected void doSolveBackward(CFG<Node> cfg, DataflowResult<Node, Fact> result) {
-        // TODO - finish me
+        boolean changed = true;
+        while (changed) {
+            changed = false;
+            for (Node node : cfg) {
+                if (cfg.isExit(node)) {
+                    continue;
+                }
+                // Node - current Basic Block B
+                Fact inB = analysis.newInitialFact();
+                Fact outB = analysis.newInitialFact();
+
+                // OUT[B] = U_IN[successors_of_B]
+                for (Node successor : cfg.getSuccsOf(node)) {
+                    analysis.meetInto(result.getInFact(successor), outB);
+                }
+                result.setOutFact(node, outB);
+
+                // IN[B] = use_B U (OUT[B] - def_B)
+                analysis.transferNode(node, inB, outB);
+
+                if (!inB.equals(result.getInFact(node))) {
+                    changed = true;
+                    result.setInFact(node, inB);
+                }
+            }
+        }
     }
 }
