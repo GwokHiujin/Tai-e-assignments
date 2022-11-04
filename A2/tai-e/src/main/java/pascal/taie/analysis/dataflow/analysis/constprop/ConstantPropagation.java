@@ -82,7 +82,7 @@ public class ConstantPropagation extends
 
     @Override
     public void meetInto(CPFact fact, CPFact target) {
-        for (Var var : fact.keySet()) {
+        for (Var var: fact.keySet()) {
             if (canHoldInt(var)) {
                 target.update(var, meetValue(fact.get(var), target.get(var)));
             }
@@ -103,14 +103,10 @@ public class ConstantPropagation extends
             return v2;
         } else if (v1.isConstant() && v2.isUndef()) {
             return v1;
-        } else if (v1.isConstant() && v2.isConstant()) {
-            if (v1.equals(v2)) {
-                return v1;
-            } else {
-                return Value.getNAC();
-            }
+        } else if (v1.equals(v2)) {
+            return v1;
         } else {
-            return Value.getUndef();
+            return Value.getNAC();
         }
     }
 
@@ -127,19 +123,13 @@ public class ConstantPropagation extends
             // and rValue must be {constant || var || binaryExp}
             if (!(lValue instanceof Var)) {
                 return false;
+            } else if (!canHoldInt((Var) lValue)) {
+                return false;
             }
 
             // transferFunction
             out.update((Var) lValue, evaluate(rValue, in));
-            boolean changed = false;
-            for (Var inVar : in.keySet()) {
-                if (!inVar.equals((Var) lValue)) {
-                    changed |= out.update(inVar, in.get(inVar));
-                }
-            }
-            return canHoldInt((Var) lValue) ?
-                    out.update((Var) lValue, evaluate(rValue, in)) || changed :
-                    changed;
+            return true;
         }
         return false;
     }

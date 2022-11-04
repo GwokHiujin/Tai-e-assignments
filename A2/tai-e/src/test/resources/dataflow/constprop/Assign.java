@@ -1,10 +1,13 @@
 class Assign {
-
-    void assign() {
-        int x = 1, y;
-        x = 2;
-        x = 3;
-        x = 4;
-        y = x;
+    void whileConstant() {
+        int a, b = 1, c = 1;
+        int i = 0;
+        while (i < 10) {
+            a = b;
+            b = c;
+            c = 1;
+            ++i;
+        }
     }
+
 }
