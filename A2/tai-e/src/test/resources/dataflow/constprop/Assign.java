@@ -1,13 +1,19 @@
 class Assign {
-    void whileConstant() {
-        int a, b = 1, c = 1;
-        int i = 0;
-        while (i < 10) {
-            a = b;
-            b = c;
-            c = 1;
-            ++i;
+
+    void undefined1(boolean b) {
+        int x, undef;
+        if (b) {
+            x = undef;
+        } else {
+            x = 10;
         }
+        int y = x;
     }
 
+    void undefined2(boolean b) {
+        int undef;
+        int x = undef;
+        x = 20;
+        int a = x;
+    }
 }

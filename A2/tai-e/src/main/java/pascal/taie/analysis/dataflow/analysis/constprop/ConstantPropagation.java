@@ -52,25 +52,13 @@ public class ConstantPropagation extends
 
     @Override
     public CPFact newBoundaryFact(CFG<Stmt> cfg) {
-        // Initialize all the value to NAC
+        // Initialize all the parameters to NAC
         CPFact boundaryFact = new CPFact();
-        for (Stmt stmt : cfg) {
-            for (RValue rValue : stmt.getUses()) {
-                if (rValue instanceof Var) {
-                    boundaryFact.update((Var) rValue, Value.getNAC());
-                }
+        for (Var param : cfg.getIR().getParams()) {
+            if (canHoldInt(param)) {
+                boundaryFact.update(param, Value.getNAC());
             }
         }
-
-        for (Stmt stmt : cfg) {
-            if (stmt.getDef().isPresent()) {
-                LValue lValue = stmt.getDef().get();
-                if (lValue instanceof Var) {
-                    boundaryFact.remove((Var) lValue);
-                }
-            }
-        }
-
         return boundaryFact;
     }
 
