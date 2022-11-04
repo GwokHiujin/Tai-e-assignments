@@ -26,6 +26,9 @@ import pascal.taie.analysis.dataflow.analysis.DataflowAnalysis;
 import pascal.taie.analysis.dataflow.fact.DataflowResult;
 import pascal.taie.analysis.graph.cfg.CFG;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 class WorkListSolver<Node, Fact> extends Solver<Node, Fact> {
 
     WorkListSolver(DataflowAnalysis<Node, Fact> analysis) {
@@ -34,7 +37,38 @@ class WorkListSolver<Node, Fact> extends Solver<Node, Fact> {
 
     @Override
     protected void doSolveForward(CFG<Node> cfg, DataflowResult<Node, Fact> result) {
-        // TODO - finish me
+        // Add all basic blocks to worklist
+        // Pick a basicBlock from Worklist
+        // oldOut = out[B]
+        // in[B] = \wedge(predecessor of B) out[]
+        // out[B] = gen_B \wedge (in[B] - kill_B)
+        // if (oldOut != out[B])
+        // add all successors of B to worklist
+        Queue<Node> worklist = new LinkedList<>();
+        for (Node node : cfg) {
+            if (cfg.isEntry(node) || cfg.isExit(node)) {
+            } else {
+                worklist.add(node);
+            }
+        }
+
+        while (!worklist.isEmpty()) {
+            Node curBB = worklist.poll();
+            Fact in = analysis.newInitialFact();
+            Fact out = analysis.newInitialFact();
+
+            for (Node predecessor : cfg.getPredsOf(curBB)) {
+                analysis.meetInto(result.getOutFact(predecessor), in);
+            }
+            result.setInFact(curBB, in);
+
+            boolean changed = analysis.transferNode(curBB, in, out);
+            if (changed) {
+                worklist.addAll(cfg.getSuccsOf(curBB));
+            }
+
+            result.setOutFact(curBB, out);
+        }
     }
 
     @Override

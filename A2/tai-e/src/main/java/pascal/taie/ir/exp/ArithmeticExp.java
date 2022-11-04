@@ -26,6 +26,7 @@ import pascal.taie.language.type.PrimitiveType;
 
 /**
  * Representation of arithmetic expression, e.g., a + b.
+ * @author guoyan
  */
 public class ArithmeticExp extends AbstractBinaryExp {
 
